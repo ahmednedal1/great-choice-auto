@@ -18,21 +18,26 @@ export default function HeroSearch() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex items-center gap-2 bg-white rounded-full p-1.5 max-w-xl mx-auto shadow-lg"
+      className="flex items-center gap-1.5 sm:gap-2 bg-white rounded-full p-1.5 w-full max-w-xl mx-auto shadow-lg"
     >
-      <Search size={18} className="ml-3 text-gray-400 flex-shrink-0" />
+      <Search
+        size={18}
+        className="ml-2 sm:ml-3 text-gray-400 flex-shrink-0"
+      />
       <input
         type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search by make or model, e.g. Honda Civic"
-        className="flex-1 py-2.5 bg-transparent text-black text-sm outline-none placeholder:text-gray-400"
+        placeholder="Search by make or model…"
+        className="flex-1 min-w-0 w-full py-2.5 bg-transparent text-black text-sm outline-none placeholder:text-gray-400"
       />
       <button
         type="submit"
-        className="px-6 py-2.5 rounded-full bg-brand-red text-white font-semibold text-sm hover:bg-brand-red/90 transition-colors flex-shrink-0"
+        className="shrink-0 px-4 sm:px-6 py-2.5 rounded-full bg-brand-red text-white font-semibold text-sm hover:bg-brand-red/90 transition-colors"
       >
-        Search
+        {/* Icon on tiny screens, text from sm up — never overflows */}
+        <Search size={18} className="sm:hidden" />
+        <span className="hidden sm:inline">Search</span>
       </button>
     </form>
   );

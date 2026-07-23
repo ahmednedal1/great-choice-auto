@@ -61,6 +61,7 @@ html {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -71,6 +72,7 @@ html {
     opacity: 0;
     transform: translateY(8px) scale(0.97);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -96,4 +98,10 @@ html {
 .gc-scroll::-webkit-scrollbar-thumb {
   background: var(--border);
   border-radius: 999px;
+}
+
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100%;
 }

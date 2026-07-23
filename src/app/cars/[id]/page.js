@@ -15,9 +15,7 @@ export async function generateMetadata({ params }) {
     .select("*")
     .eq("id", params.id)
     .single();
-
   if (!car) return {};
-
   return {
     title: `${car.year} ${car.make} ${car.model} — $${Number(car.price).toLocaleString()}`,
     description: car.description?.slice(0, 155),
@@ -31,7 +29,6 @@ export default async function CarDetailPage({ params }) {
     .select("*, car_images(*)")
     .eq("id", params.id)
     .single();
-
   if (!car) notFound();
 
   const images = car.car_images?.length
@@ -51,24 +48,25 @@ export default async function CarDetailPage({ params }) {
     <div className="max-w-7xl mx-auto px-4 py-10 pb-28 md:pb-10">
       {/* Side-effect only: records this car in localStorage, renders nothing */}
       <RecentlyViewedTracker carId={car.id} />
-
       <div className="grid md:grid-cols-2 gap-10">
         {/* Gallery */}
-        <ImageGallery
-          images={images}
-          alt={`${car.year} ${car.make} ${car.model}`}
-          sold={car.status === "sold"}
-        />
+        <div className="min-w-0">
+          <ImageGallery
+            images={images}
+            alt={`${car.year} ${car.make} ${car.model}`}
+            sold={car.status === "sold"}
+          />
+        </div>
 
         {/* Details */}
-        <div>
+        <div className="min-w-0">
           <div className="flex items-start justify-between gap-4">
-            <h1 className="font-display font-bold text-3xl">
+            <h1 className="font-display font-bold text-2xl sm:text-3xl break-words min-w-0">
               {car.year} {car.make} {car.model}
             </h1>
             <FavoriteButton carId={car.id} />
           </div>
-          <div className="flex items-baseline gap-3 mt-3">
+          <div className="flex items-baseline flex-wrap gap-3 mt-3">
             {car.original_price && car.original_price > car.price && (
               <span className="text-lg text-[var(--text-secondary)] line-through">
                 ${Number(car.original_price).toLocaleString()}
@@ -82,7 +80,7 @@ export default async function CarDetailPage({ params }) {
           <div className="swoosh-divider w-16 my-6" />
 
           {/* Specs — icon comparison grid */}
-          <div className="grid grid-cols-2 gap-3 mb-8">
+          <div className="grid grid-cols-1 min-[380px]:grid-cols-2 gap-3 mb-8">
             <Spec icon={Calendar} label="Year" value={car.year} />
             <Spec
               icon={Gauge}
@@ -103,14 +101,14 @@ export default async function CarDetailPage({ params }) {
               <p className="font-display font-semibold text-lg mb-3">
                 Features
               </p>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 min-[380px]:grid-cols-2 gap-2">
                 {car.features.map((feature) => (
                   <div
                     key={feature}
-                    className="flex items-center gap-2 text-sm"
+                    className="flex items-center gap-2 text-sm min-w-0"
                   >
                     <Check size={16} className="text-brand-red flex-shrink-0" />
-                    {feature}
+                    <span className="min-w-0 break-words">{feature}</span>
                   </div>
                 ))}
               </div>
@@ -123,7 +121,7 @@ export default async function CarDetailPage({ params }) {
               <p className="font-display font-semibold text-lg mb-2">
                 Description
               </p>
-              <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+              <p className="text-sm text-[var(--text-secondary)] leading-relaxed break-words">
                 {car.description}
               </p>
             </div>
@@ -166,15 +164,15 @@ export default async function CarDetailPage({ params }) {
 
 function Spec({ icon: Icon, label, value }) {
   return (
-    <div className="flex items-center gap-3 p-3 rounded-xl border border-[var(--border)]">
+    <div className="flex items-center gap-3 p-3 rounded-xl border border-[var(--border)] min-w-0">
       <div className="w-9 h-9 rounded-full bg-brand-red/10 flex items-center justify-center flex-shrink-0">
         <Icon size={16} className="text-brand-red" />
       </div>
-      <div>
-        <p className="text-xs text-[var(--text-secondary)] uppercase tracking-wide">
+      <div className="min-w-0">
+        <p className="text-xs text-[var(--text-secondary)] uppercase tracking-wide truncate">
           {label}
         </p>
-        <p className="font-semibold mt-0.5">{value}</p>
+        <p className="font-semibold mt-0.5 truncate">{value}</p>
       </div>
     </div>
   );

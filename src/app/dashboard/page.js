@@ -2,13 +2,12 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
-
+import DeleteCarButton from "@/components/DeleteCarButton";
 export default async function DashboardPage() {
   const supabase = createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
   if (!user) redirect("/login");
 
   const { data: profile } = await supabase
@@ -16,7 +15,6 @@ export default async function DashboardPage() {
     .select("is_admin")
     .eq("id", user.id)
     .single();
-
   if (!profile?.is_admin) redirect("/");
 
   const { data: cars } = await supabase
@@ -72,7 +70,6 @@ export default async function DashboardPage() {
       {/* Listings — stacked cards on mobile, table on desktop */}
       <div>
         <p className="font-display font-semibold text-lg mb-4">My Listings</p>
-
         <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -91,13 +88,11 @@ export default async function DashboardPage() {
             </tbody>
           </table>
         </div>
-
         <div className="md:hidden space-y-3">
           {cars?.map((car) => (
             <DashboardCard key={car.id} car={car} />
           ))}
         </div>
-
         {!cars?.length && (
           <p className="text-[var(--text-secondary)] text-center py-16 border border-dashed border-[var(--border)] rounded-2xl">
             No listings yet — add your first car.
@@ -147,12 +142,19 @@ function DashboardRow({ car }) {
         {new Date(car.created_at).toLocaleDateString()}
       </td>
       <td className="py-3 pr-4">
-        <Link
-          href={`/dashboard/cars/${car.id}/edit`}
-          className="text-brand-red font-semibold"
-        >
-          Edit
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link
+            href={`/dashboard/cars/${car.id}/edit`}
+            className="text-brand-red font-semibold"
+          >
+            Edit
+          </Link>
+          <DeleteCarButton
+            carId={car.id}
+            carName={`${car.year} ${car.make} ${car.model}`}
+            images={car.car_images}
+          />
+        </div>
       </td>
     </tr>
   );
@@ -161,22 +163,29 @@ function DashboardRow({ car }) {
 function DashboardCard({ car }) {
   const cover = car.car_images?.[0]?.image_url || "/placeholder-car.svg";
   return (
-    <Link
-      href={`/dashboard/cars/${car.id}/edit`}
-      className="flex items-center gap-4 p-3 rounded-xl border border-[var(--border)]"
-    >
-      <div className="relative w-20 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-black/20">
-        <Image src={cover} alt="" fill className="object-cover" />
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="font-semibold truncate">
-          {car.year} {car.make} {car.model}
-        </p>
-        <p className="text-sm text-[var(--text-secondary)]">
-          ${Number(car.price).toLocaleString()}
-        </p>
-      </div>
+    <div className="flex items-center gap-4 p-3 rounded-xl border border-[var(--border)]">
+      <Link
+        href={`/dashboard/cars/${car.id}/edit`}
+        className="flex items-center gap-4 flex-1 min-w-0"
+      >
+        <div className="relative w-20 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-black/20">
+          <Image src={cover} alt="" fill className="object-cover" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="font-semibold truncate">
+            {car.year} {car.make} {car.model}
+          </p>
+          <p className="text-sm text-[var(--text-secondary)]">
+            ${Number(car.price).toLocaleString()}
+          </p>
+        </div>
+      </Link>
       <StatusBadge status={car.status} />
-    </Link>
+      <DeleteCarButton
+        carId={car.id}
+        carName={`${car.year} ${car.make} ${car.model}`}
+        images={car.car_images}
+      />
+    </div>
   );
 }
